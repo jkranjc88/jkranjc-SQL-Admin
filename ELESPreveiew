@@ -1,0 +1,52 @@
+sp_blitzindex
+
+SP_BLITZWHO
+sp_whoisactive
+
+
+CREATE INDEX [RtpId] ON [DwOSSE].[dbo].[ProductionReportsForRtp] ( [RtpId] ) 
+
+
+CREATE INDEX [ForDate_Includes] ON [DwOSSE].[dbo].[OcenjevalnikSE_Min15_RealTime_3] ([ForDate])  INCLUDE ([ELEKTRARNA_ID], [DISTRIBUTER], ) WITH (FILLFACTOR=100, ONLINE=?, SORT_IN_TEMPDB=?, DATA_COMPRESSION=?);
+
+USE DWOSSE
+GO
+CREATE NONCLUSTERED INDEX [IX_OcenjevalnikSE_Min15_RealTime_3_ForDate_Includes] 
+ON [DwOSSE].[dbo].[OcenjevalnikSE_Min15_RealTime_3] ([ForDate])  
+INCLUDE ([ELEKTRARNA_ID], [DISTRIBUTER], [VREDNOST_MERITVE], [UniqueId]);
+
+USE DwTransparency
+GO
+CREATE NONCLUSTERED INDEX [IX_PublishReportQueue_ProcessStarted_DoNotExecuteBefore] 
+ON [DwTransparency].[dbo].[PublishReportQueue] ([ProcessStarted], [DoNotExecuteBefore])
+
+USE DwTransparency
+GO
+CREATE INDEX [IX_BalancingTimeSeriesPeriodPoints_periodId_timeSeriesId_marketDocumentId] 
+ON [DwTransparency].[dat].[BalancingTimeSeriesPeriodPoints] ([periodId], [timeSeriesId], [marketDocumentId])
+
+/*
+Stage.Arsoforecast
+
+Ogromna tabela, kot kaže se uporablja za staged data.
+200.000.000 vrstic
+
+Je potrebno držanje vseh podatkov?
+*/
+
+/*
+
+  select AgreementIdentification
+  from dw.DocumentData
+  where AgreementIdentification not in (select AgreementIdentification from DataMarts.dimAgreementIdentification )
+  group by AgreementIdentification
+
+  v
+
+  select AgreementIdentification
+  from dw.DocumentData d
+  where not exists (select 1 from DataMarts.dimAgreementIdentification s
+  where s.AgreementIdentification = d.AgreementIdentification )
+  group by AgreementIdentification
+
+*/
